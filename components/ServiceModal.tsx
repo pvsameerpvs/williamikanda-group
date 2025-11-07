@@ -66,7 +66,8 @@ export default function ServiceModal({ open, onClose }: Props) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+          // FLEX CENTER → perfect centering on mobile & desktop
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
@@ -75,13 +76,14 @@ export default function ServiceModal({ open, onClose }: Props) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.98 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="mx-auto mt-16 w-[92vw] max-w-4xl rounded-2xl overflow-hidden bg-white dark:bg-neutral-900 border border-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.5)]"
+            // FULL WIDTH + MAX HEIGHT + FLEX COLUMN (header fixed, body scrolls)
+            className="w-full max-w-4xl rounded-2xl overflow-hidden bg-white dark:bg-neutral-900 border border-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.5)] max-h-[90vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-labelledby="service-title"
           >
-            {/* Header */}
+            {/* Header (stays fixed) */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-black/10 dark:border-white/10">
               <h4 id="service-title" className="text-lg md:text-xl font-bold">
                 {open.name}
@@ -95,10 +97,10 @@ export default function ServiceModal({ open, onClose }: Props) {
               </button>
             </div>
 
-            {/* Body: gallery + details */}
-            <div className="grid md:grid-cols-2">
+            {/* Body (scrolls if needed) */}
+            <div className="grid md:grid-cols-2 flex-1 overflow-auto">
               {/* Gallery */}
-              <div className="relative h-60 md:h-[380px] bg-black/5 dark:bg-white/5 overflow-hidden">
+              <div className="relative h-64 md:h-auto min-h-[240px] bg-black/5 dark:bg-white/5 overflow-hidden">
                 {hasGallery ? (
                   <>
                     <AnimatePresence initial={false} mode="popLayout">
@@ -190,7 +192,7 @@ export default function ServiceModal({ open, onClose }: Props) {
                   ))}
                 </ul>
 
-                <div className="mt-5 flex gap-3">
+                <div className="mt-5 flex flex-wrap gap-3">
                   <button
                     onClick={onClose}
                     className="rounded-full px-4 py-2 text-sm font-semibold border border-black/15 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/10 transition"

@@ -66,10 +66,10 @@ export default function SectionAbout() {
           >
             <BallsClusterLeft />
 
-            <div className="relative z-10 mx-auto max-w-2xl text-center">
+            <div className="relative z-10 mx-auto max-w-2xl ">
               <h2
                 id="about-heading"
-                className="text-3xl md:text-4xl font-bold tracking-tight"
+                className="text-3xl md:text-4xl font-bold tracking-tight text-center"
               >
                 About Us
               </h2>

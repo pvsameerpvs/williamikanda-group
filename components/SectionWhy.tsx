@@ -40,11 +40,7 @@ const sectionFade = {
 
 const staggerWrap = {
   hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
+  show: { transition: { staggerChildren: 0.08 } },
 };
 
 const fadeUp = {
@@ -63,7 +59,7 @@ const slideRight = {
 };
 
 export default function WhyChooseUs() {
-  // For subtle parallax tilt on the image
+  // subtle parallax tilt on the image
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const rotateX = useTransform(my, [-20, 20], [6, -6]);
@@ -73,10 +69,9 @@ export default function WhyChooseUs() {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
-    mx.set((x / rect.width) * 40); // -20..20
-    my.set((y / rect.height) * 40); // -20..20
+    mx.set((x / rect.width) * 40);
+    my.set((y / rect.height) * 40);
   }
-
   function onLeave() {
     mx.set(0);
     my.set(0);
@@ -88,13 +83,13 @@ export default function WhyChooseUs() {
       whileInView="show"
       viewport={{ once: true, margin: "-80px" }}
       variants={sectionFade}
-      className="relative overflow-hidden bg-[var(--brand-bg)] text-[var(--brand-fg)]"
+      className="relative overflow-hidden bg-[var(--brand-bg)] text-[var(--brand-fg)] antialiased"
       style={{
         backgroundImage:
           "radial-gradient(120% 80% at 50% -20%, rgba(205,20,42,0.08) 0%, transparent 60%)",
       }}
     >
-      {/* Optional inline theme vars; remove if you define globally */}
+      {/* theme vars (kept inline; remove if you set globally) */}
       <style jsx>{`
         :root {
           --brand-red: #cd142a;
@@ -121,7 +116,8 @@ export default function WhyChooseUs() {
         }
       `}</style>
 
-      <div className="mx-auto w-full max-w-7xl px-6 md:px-8 py-14 md:py-20">
+      {/* container rhythm (kept) */}
+      <div className="mx-auto w-full max-w-7xl px-6 md:px-8 py-12 md:py-20">
         {/* Heading */}
         <motion.header
           variants={staggerWrap}
@@ -129,12 +125,27 @@ export default function WhyChooseUs() {
         >
           <motion.h2
             variants={fadeUp}
-            className="text-3xl md:text-5xl font-extrabold tracking-tight"
+            className="
+              leading-tight md:leading-tight
+              text-[clamp(28px,6vw,40px)] md:text-5xl
+              font-normal
+              [text-wrap:balance]
+              dm-serif /* your global mapper will give DM Serif Display to h2 */
+            "
           >
             Why choose{" "}
             <span className="text-[var(--brand-red)] not-italic">us?</span>
           </motion.h2>
-          <motion.p variants={fadeUp} className="mt-3 text-[var(--muted)]">
+
+          <motion.p
+            variants={fadeUp}
+            className="
+              mt-3 md:mt-4 mx-auto max-w-2xl
+              text-[clamp(14px,2.8vw,16px)] md:text-[15px]
+              leading-7 md:leading-8 text-[var(--muted)]
+              smooch /* applies Smooch Sans */
+            "
+          >
             From fundamentals to pro pathways, we blend elite coaching, European
             methodology, and character-building values so every player
             thrives—on and off the pitch.
@@ -144,21 +155,25 @@ export default function WhyChooseUs() {
         {/* Feature ring + image */}
         <motion.div
           variants={staggerWrap}
-          className="mt-10 md:mt-14 grid grid-cols-1 items-center gap-10 md:grid-cols-[1fr_minmax(0,520px)_1fr] md:gap-12"
+          className="
+            mt-8 md:mt-14
+            grid grid-cols-1 items-start gap-8 md:gap-12
+            md:grid-cols-[1fr_minmax(0,520px)_1fr]
+          "
         >
           {/* Left features */}
-          <ul className="order-2 md:order-1 space-y-10 md:space-y-14">
+          <ul className="order-2 md:order-1 space-y-8 md:space-y-12">
             {features.slice(0, 2).map(({ title, desc, Icon }, i) => (
               <motion.li
                 key={i}
                 variants={slideLeft}
                 className="text-center md:text-right"
               >
-                <div className="inline-flex items-center md:justify-end gap-3">
+                <div className="inline-flex w-full md:w-auto items-start md:justify-end gap-0 md:gap-3">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    className="grid h-10 w-10 place-items-center rounded-full"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-full p-0"
                     style={{
                       background: "var(--icon-bg)",
                       border: "1px solid var(--icon-br)",
@@ -166,9 +181,28 @@ export default function WhyChooseUs() {
                   >
                     <Icon className="h-5 w-5" color="var(--brand-red)" />
                   </motion.div>
-                  <div className="max-w-xs">
-                    <h3 className="font-semibold">{title}</h3>
-                    <p className="mt-1 text-sm text-[var(--muted)]">{desc}</p>
+                  <div className="max-w-xs text-left md:text-right">
+                    <h3
+                      className="
+                        leading-snug md:leading-snug
+                        text-[clamp(16px,3.5vw,18px)]
+                        font-normal dm-serif
+                      "
+                    >
+                      {title}
+                    </h3>
+                    <p
+                      className="
+                        mt-1
+                        text-[clamp(13px,3.2vw,14px)]
+                        md:text-sm
+                        leading-6 md:leading-7
+                        text-[var(--muted)]
+                        smooch
+                      "
+                    >
+                      {desc}
+                    </p>
                   </div>
                 </div>
               </motion.li>
@@ -178,7 +212,7 @@ export default function WhyChooseUs() {
           {/* Center image with parallax tilt */}
           <motion.div
             variants={fadeUp}
-            className="order-1 md:order-2 mx-auto"
+            className="order-1 md:order-2 mx-auto w-full max-w-[520px]"
             onMouseMove={onMove}
             onMouseLeave={onLeave}
           >
@@ -189,10 +223,10 @@ export default function WhyChooseUs() {
               <motion.div
                 style={{ rotateX, rotateY }}
                 transition={{ type: "spring", stiffness: 120, damping: 14 }}
-                className="overflow-hidden rounded-[14px] ring-1"
+                className="overflow-hidden rounded-[14px] ring-1 ring-[var(--ring)] md:[cursor:grab]"
               >
                 <Image
-                  src="/academy-why.jpg" // swap to your asset
+                  src="/academy-why.jpg"
                   alt="WILLIAMIKANDA Academy training"
                   width={520}
                   height={640}
@@ -202,8 +236,8 @@ export default function WhyChooseUs() {
               </motion.div>
             </motion.div>
 
-            {/* chips (gentle float loop) */}
-            <div className="mt-4 flex flex-wrap justify-center gap-2 md:justify-start">
+            {/* chips */}
+            <div className="mt-3 md:mt-4 flex flex-wrap justify-center gap-2 md:justify-start">
               {["UEFA-licensed staff", "Video analysis", "Showcase events"].map(
                 (c, i) => (
                   <motion.span
@@ -217,7 +251,11 @@ export default function WhyChooseUs() {
                       repeat: Infinity,
                       ease: "easeInOut",
                     }}
-                    className="rounded-full px-3 py-1.5 text-xs md:text-sm"
+                    className="
+                      rounded-full px-3 py-1.5
+                      text-[clamp(11px,3vw,13px)] md:text-sm
+                      smooch
+                    "
                     style={{
                       background: "var(--chip)",
                       border: "1px solid var(--card-border)",
@@ -232,18 +270,18 @@ export default function WhyChooseUs() {
           </motion.div>
 
           {/* Right features */}
-          <ul className="order-3 space-y-10 md:space-y-14">
+          <ul className="order-3 space-y-8 md:space-y-12">
             {features.slice(2).map(({ title, desc, Icon }, i) => (
               <motion.li
                 key={i}
                 variants={slideRight}
                 className="text-center md:text-left"
               >
-                <div className="inline-flex items-center gap-3">
+                <div className="inline-flex w-full md:w-auto items-start gap-0 md:gap-3">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    className="grid h-10 w-10 place-items-center rounded-full"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-full"
                     style={{
                       background: "var(--icon-bg)",
                       border: "1px solid var(--icon-br)",
@@ -251,9 +289,28 @@ export default function WhyChooseUs() {
                   >
                     <Icon className="h-5 w-5" color="var(--brand-red)" />
                   </motion.div>
-                  <div className="max-w-xs">
-                    <h3 className="font-semibold">{title}</h3>
-                    <p className="mt-1 text-sm text-[var(--muted)]">{desc}</p>
+                  <div className="max-w-xs text-left">
+                    <h3
+                      className="
+                        leading-snug md:leading-snug
+                        text-[clamp(16px,3.5vw,18px)]
+                        font-normal dm-serif
+                      "
+                    >
+                      {title}
+                    </h3>
+                    <p
+                      className="
+                        mt-1
+                        text-[clamp(13px,3.2vw,14px)]
+                        md:text-sm
+                        leading-6 md:leading-7
+                        text-[var(--muted)]
+                        smooch
+                      "
+                    >
+                      {desc}
+                    </p>
                   </div>
                 </div>
               </motion.li>
@@ -264,7 +321,7 @@ export default function WhyChooseUs() {
         {/* CTA */}
         <motion.div
           variants={fadeUp}
-          className="mt-10 md:mt-12 flex justify-center"
+          className="mt-8 md:mt-12 flex justify-center"
         >
           <motion.a
             href="/contact"
@@ -274,13 +331,15 @@ export default function WhyChooseUs() {
             }}
             whileTap={{ scale: 0.98 }}
             className="
-              inline-flex items-center justify-center rounded-full px-6 py-3
-              text-sm md:text-base font-semibold uppercase tracking-wide
+              inline-flex items-center justify-center rounded-full
+              px-6 py-3 text-sm md:text-base
+              font-semibold uppercase tracking-wide
               border border-[var(--brand-red)]
               shadow-[0_4px_20px_rgba(205,20,42,0.25)]
               bg-[var(--brand-red)] text-[var(--brand-bg)]
               hover:bg-[var(--brand-bg)] hover:text-[var(--brand-fg)]
               transition-all duration-300 ease-out
+              smooch
             "
           >
             Get a FREE trial
@@ -288,7 +347,7 @@ export default function WhyChooseUs() {
         </motion.div>
       </div>
 
-      {/* Subtle animated brand glow in the background */}
+      {/* Subtle animated brand glow */}
       <motion.div
         aria-hidden
         initial={{ opacity: 0 }}
@@ -296,7 +355,7 @@ export default function WhyChooseUs() {
         viewport={{ once: true }}
         animate={{ opacity: [0.15, 0.3, 0.15] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="pointer-events-none absolute -top-24 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full"
+        className="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 md:h-80 md:w-80 -translate-x-1/2 rounded-full"
         style={{
           background:
             "radial-gradient(closest-side, rgba(205,20,42,0.25), transparent)",
