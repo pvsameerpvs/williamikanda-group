@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "contact": "Contact"
+  },
+  "cta": {
+    "title": "Join the WILLIAMIKANDA FAMILY",
+    "desc": "Empowering talent, uplifting communities, and building a legacy in sports and beyond.",
+    "button": "Get in Touch"
+  },
+  "hero": {
+    "slide1Title": "Where Passion Meets Purpose",
+    "slide1Desc": "Elite football, premium services, and community impact since 2014.",
+    "slide2Title": "From Kinshasa to the World",
+    "slide2Desc": "A global journey in football and entrepreneurship.",
+    "slide3Title": "Train. Grow. Excel.",
+    "slide3Desc": "Academy, coaching, tours, and professional management."
+  },
+  "about": {
+    "title": "About WILLIAMIKANDA GROUP",
+    "content": "WILLIAMIKANDA GROUP is a development organization founded on December 25, 2014, by its founding President, Mr. William Mikanda, and his close associates, such as Mrs. Diana Panga, later joined by Naomi Ngoy and others. Mr. WILLIAM MIKANDA, the eldest son of Mikanda Fredy and Tshilumba Joséphina, is a devout Christian. Born on May 20, 1997, in Kinshasa, he traveled to Turkey, Portugal, Belgium, Uzbekistan, Russia, India, and the United Arab Emirates to pursue his professional football career. The Group operates primarily in football—professional club, academy, and management—and also in catering, transportation, the sale of sports equipment (EL MASKO9), and support for widows and orphans globally through the WILLIAMIKANDA FAMILY.",
+    "whyTitle": "Why Choose Us",
+    "whyPoints": [
+      "Professional Football Pathways",
+      "World-Class Coaching & Mentorship",
+      "Holistic Community Focus",
+      "Premium Services & Operations"
+    ],
+    "whoTitle": "Who We Are",
+    "whoContent": "We are a family-led organization blending sports excellence with social impact. Our mission is to discover talent, develop character, and deliver opportunities on and off the pitch."
+  },
+  "services": {
+    "title": "Our Services",
+    "list": [
+      {
+        "name": "Football Academy",
+        "desc": "Structured programs for youth and professionals with licensed coaches."
+      },
+      {
+        "name": "Football Training",
+        "desc": "Intensive individual and team training for peak performance."
+      },
+      {
+        "name": "Sports Tours",
+        "desc": "International exposure with curated matches and experiences."
+      },
+      {
+        "name": "Football Accessories",
+        "desc": "Quality gear and merchandise under the EL MASKO9 label."
+      }
+    ]
+  },
+  "footer": {
+    "rights": "© 2014–2025 WILLIAMIKANDA GROUP. All rights reserved."
+  },
+  "contact": {
+    "title": "Contact Us",
+    "desc": "Have a question or want to collaborate? Send us a message.",
+    "name": "Your Name",
+    "email": "Email",
+    "message": "Message",
+    "send": "Send"
+  }
+}
