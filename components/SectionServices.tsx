@@ -28,7 +28,16 @@ const services: Service[] = [
     name: "Elite Training",
     desc: "UEFA-licensed coaches, position-specific drills, and video analysis for measurable progress.",
     Icon: Trophy,
-    images: ["/elit.jpg", "/admition.jpgg", "/internatinal.jpg"],
+    images: [
+      "/Elitetraining.jpeg",
+      "/Elitetraining2.jpeg",
+      "/Elitetraining3.jpeg",
+      "/Elitetraining4.jpeg",
+      "/Elitetraining5.jpeg",
+      "/Elitetraining6.jpeg",
+      "/Elitetraining7.jpeg",
+      "/Elitetraining8.jpeg",
+    ],
     details: [
       "Position training: GK, Defense, Midfield, Attack",
       "Weekly video feedback & performance tracking",
@@ -41,7 +50,15 @@ const services: Service[] = [
     name: "Academy Admissions",
     desc: "Trials, age-group placements (U7–U18), and tailored development plans for each athlete.",
     Icon: GraduationCap,
-    image: "/admition.jpg",
+    images: [
+      "/team.jpeg",
+      "/admission2.jpeg",
+      "/admission.jpeg",
+      "/admission3.jpeg",
+      "/admission5.jpeg",
+      "/admission6.jpeg",
+      "/player.jpeg",
+    ],
     details: [
       "Open & invitation-only trials throughout the season",
       "Transparent placement to the right age & level",
@@ -54,7 +71,7 @@ const services: Service[] = [
     name: "Player Care & Safety",
     desc: "Sports physio guidance, recovery protocols, and safe, structured sessions on pro-grade turf.",
     Icon: ShieldCheck,
-    images: ["/injury.jpg", "/services/player-care-2.jpg"],
+    images: ["/medical.jpeg", "/injury.jpg"],
     details: [
       "On-site first aid & physio consultation slots",
       "RICE protocol & return-to-play supervision",
@@ -67,7 +84,12 @@ const services: Service[] = [
     name: "International Pathways",
     desc: "Showcases, scouting links, and scholarship guidance across the UAE, Europe, and Africa.",
     Icon: Globe2,
-    images: ["/internatinal.jpg", "/services/pathways-2.jpg", "/admition.jpg"],
+    images: [
+      "/internatinal.jpeg",
+      "/international3.jpeg",
+      "/admition.jpg",
+      "/elit.jpg",
+    ],
     details: [
       "Showcase events with pro scouts & universities",
       "CV, highlights, and reference letter support",

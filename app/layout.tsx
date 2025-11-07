@@ -5,6 +5,7 @@ import { ThemeProvider } from "./theme-provider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { I18nProvider } from "@/lib/i18n";
+import WhatsAppFab from "@/components/WhatsAppFab"; // ⬅️ add this
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,6 +31,11 @@ export default function RootLayout({
             </div> */}
             <main>{children}</main>
             <Footer />
+            {/* Floating WhatsApp button */}
+            <WhatsAppFab
+              phone="971501234567" // ⬅️ put your full number (digits only, with country code)
+              message="Hi WILLIAMIKANDA GROUP! I’m interested in your academy."
+            />
           </I18nProvider>
         </ThemeProvider>
       </body>

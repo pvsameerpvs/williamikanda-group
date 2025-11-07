@@ -101,7 +101,7 @@ export default function SectionAbout() {
             >
               <div className="relative w-full h-0 pb-[62%]">
                 <Image
-                  src="/about.jpg"
+                  src="/about.jpeg"
                   alt="About"
                   fill
                   className="object-cover"

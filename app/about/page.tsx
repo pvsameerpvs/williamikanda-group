@@ -1,7 +1,6 @@
 import SectionAbout from "@/components/SectionAbout";
-import SectionWhy from "@/components/SectionWhy";
 import SectionWho from "@/components/SectionWho";
-import Navbar from "@/components/Navbar";
+import SectionWhy from "@/components/SectionWhy";
 
 export default function AboutPage() {
   return (

@@ -76,7 +76,7 @@ export default function SectionWho() {
               transition={{ type: "spring", stiffness: 120, damping: 14 }}
             >
               <Image
-                src="/who.jpg"
+                src="/who.jpeg"
                 width={900}
                 height={600}
                 alt="WILLIAMIKANDA GROUP — who we are"
