@@ -5,6 +5,8 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Trophy, GraduationCap, ShieldCheck, Globe2 } from "lucide-react";
 import ServiceModal, { Service } from "./ServiceModal";
+import { usePathname } from "next/navigation";
+import Navbar from "./Navbar";
 
 const BRAND = { red: "#cd142a" };
 
@@ -78,10 +80,29 @@ const services: Service[] = [
 
 export default function SectionServices() {
   const [open, setOpen] = useState<Service | null>(null);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
 
   return (
     <>
-      <section className="container-pad py-16 md:py-20">
+      {/* Navbar on non-home pages with standard spacing and responsive stickiness */}
+      {!isHome && (
+        <div className="sticky top-0 z-50">
+          <Navbar />
+        </div>
+      )}
+
+      <section
+        id="services"
+        className="
+          container-pad 
+          py-14 md:py-18 lg:py-20 
+          scroll-mt-28
+        "
+      >
+        {/* standard distance after navbar */}
+        {!isHome && <div className="mt-4 md:mt-6" />}
+
         <motion.div
           variants={wrap}
           initial="hidden"
@@ -94,9 +115,10 @@ export default function SectionServices() {
           >
             Services
           </motion.h2>
+
           <motion.p
             variants={fadeUp}
-            className="text-center text-black/70 dark:text-white/70 max-w-2xl mx-auto mb-10"
+            className="text-center text-black/70 dark:text-white/70 max-w-2xl mx-auto mb-8 md:mb-10"
           >
             We provide world-class football development with a clear pathway
             from grassroots to the professional game.
@@ -112,7 +134,7 @@ export default function SectionServices() {
                 whileHover={{ y: -4 }}
                 transition={{ type: "spring", stiffness: 300, damping: 24 }}
                 className="
-                  group relative text-left rounded-2xl overflow-hidden
+                  group relative text-left rounded-2xl overflow-hidden w-full
                   bg-white dark:bg-neutral-900/70
                   border border-black/10 dark:border-white/10
                   shadow-[0_6px_30px_rgba(0,0,0,0.06)]
@@ -126,15 +148,18 @@ export default function SectionServices() {
                   className="absolute -top-1 left-1/2 h-1.5 w-16 -translate-x-1/2 rounded-full"
                   style={{ background: BRAND.red }}
                 />
+
                 {/* cover image (first if multi) */}
-                <div className="relative h-40 w-full">
+                <div className="relative h-40 sm:h-44 md:h-48 w-full">
                   <Image
                     src={
-                      s.images?.[0] ?? s.image ?? "/services/placeholder.jpg"
+                      s.images?.[0] ??
+                      (s as any).image ??
+                      "/services/placeholder.jpg"
                     }
                     alt={s.name}
                     fill
-                    sizes="(max-width:768px) 100vw, 33vw"
+                    sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
                     className="object-cover"
                   />
                   <span className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
@@ -155,6 +180,7 @@ export default function SectionServices() {
                       {s.name}
                     </h3>
                   </div>
+
                   <p className="text-sm md:text-[15px] leading-relaxed text-black/70 dark:text-white/75">
                     {s.desc}
                   </p>
@@ -181,7 +207,7 @@ export default function SectionServices() {
         </motion.div>
       </section>
 
-      {/* Separated modal */}
+      {/* Modal kept separate */}
       <ServiceModal open={open} onClose={() => setOpen(null)} />
     </>
   );

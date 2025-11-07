@@ -8,6 +8,7 @@ import {
 } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { usePathname } from "next/navigation";
+import Navbar from "./Navbar";
 
 /* ----------------------------- Anim helpers ----------------------------- */
 const slideLeft = {
@@ -29,82 +30,90 @@ export default function SectionAbout() {
   const isHome = pathname === "/";
 
   return (
-    <section
-      className={[
-        "relative overflow-hidden transition-colors pt-0 duration-500 bg-white dark:bg-neutral-900",
-        isHome
-          ? "min-h-[calc(100dvh-64px)] md:min-h-[calc(100svh-64px)] flex"
-          : "",
-      ].join(" ")}
-      aria-labelledby="about-heading"
-    >
-      {/* Background: soft grid + vignette */}
-      <BackgroundDecor />
+    <>
+      {!isHome && (
+        <div className="sticky top-0 z-50">
+          <Navbar />
+        </div>
+      )}
 
-      <div
+      <section
         className={[
-          "container-pad w-full grid md:grid-cols-2 gap-10 md:gap-14 items-center",
-          isHome ? "py-12 md:py-0" : "py-16 md:py-20",
+          "relative overflow-hidden transition-colors pt-0 duration-500 bg-white dark:bg-neutral-900",
+          isHome
+            ? "min-h-[calc(100dvh-64px)] md:min-h-[calc(100svh-64px)] flex"
+            : "",
         ].join(" ")}
+        aria-labelledby="about-heading"
       >
-        {/* LEFT: text + decorative balls */}
-        <motion.div
-          variants={slideLeft}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.35 }}
-          className="relative text-black dark:text-white"
-        >
-          <BallsClusterLeft />
+        {!isHome && <div className="mt-4 md:mt-6" />}
 
-          <div className="relative z-10">
-            <h2
-              id="about-heading"
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight"
-            >
-              About Us
-            </h2>
-            <p className="mt-5 max-w-xl leading-8 text-black/70 dark:text-white/80 text-base sm:text-lg">
-              {t.about.content ??
-                "The world’s sporting ecosystem is shifting from opaque and centralized to transparent and data-driven. At WILLIAMIKANDA GROUP, we believe in disciplined training, measurable progress, and community impact—using technology and care to build real pathways for talent."}
-            </p>
-          </div>
-        </motion.div>
+        <BackgroundDecor />
 
-        {/* RIGHT: image + overlay balls */}
-        <motion.div
-          variants={slideRight}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.35 }}
-          className="relative"
+        <div
+          className={[
+            "container-pad w-full grid md:grid-cols-2 gap-10 md:gap-14 items-center",
+            isHome ? "py-12 md:py-0" : "py-16 md:py-20",
+          ].join(" ")}
         >
-          <div
-            className="
-              relative rounded-2xl overflow-hidden
-              ring-1 ring-black/10 dark:ring-white/10
-              shadow-[0_30px_80px_rgba(0,0,0,0.2)]
-              bg-white/50 dark:bg-white/5 backdrop-blur-sm transition-all duration-500
-              max-w-[720px] mx-auto
-            "
+          {/* LEFT: centered text + decorative balls */}
+          <motion.div
+            variants={slideLeft}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.35 }}
+            className="relative text-black dark:text-white"
           >
-            <div className="relative w-full h-0 pb-[62%]">
-              <Image
-                src="/about.jpg"
-                alt="About"
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-black/30 via-transparent to-transparent dark:from-black/50" />
-            </div>
+            <BallsClusterLeft />
 
-            {/* Balls floating over the image */}
-            <BallsClusterRight />
-          </div>
-        </motion.div>
-      </div>
-    </section>
+            <div className="relative z-10 mx-auto max-w-2xl text-center">
+              <h2
+                id="about-heading"
+                className="text-3xl md:text-4xl font-bold tracking-tight"
+              >
+                About Us
+              </h2>
+              <p className="mt-4 md:mt-5 leading-8 text-black/70 dark:text-white/80 text-sm md:text-[15px]">
+                {t.about.content ??
+                  "The world’s sporting ecosystem is shifting from opaque and centralized to transparent and data-driven. At WILLIAMIKANDA GROUP, we believe in disciplined training, measurable progress, and community impact—using technology and care to build real pathways for talent."}
+              </p>
+            </div>
+          </motion.div>
+
+          {/* RIGHT: image + overlay balls */}
+          <motion.div
+            variants={slideRight}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.35 }}
+            className="relative"
+          >
+            <div
+              className="
+                relative rounded-2xl overflow-hidden
+                ring-1 ring-black/10 dark:ring-white/10
+                shadow-[0_30px_80px_rgba(0,0,0,0.2)]
+                bg-white/50 dark:bg-white/5 backdrop-blur-sm transition-all duration-500
+                max-w-[720px] mx-auto
+              "
+            >
+              <div className="relative w-full h-0 pb-[62%]">
+                <Image
+                  src="/about.jpg"
+                  alt="About"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-black/30 via-transparent to-transparent dark:from-black/50" />
+              </div>
+
+              <BallsClusterRight />
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    </>
   );
 }
 
@@ -112,9 +121,7 @@ export default function SectionAbout() {
 function BackgroundDecor() {
   return (
     <div className="absolute inset-0 -z-10 pointer-events-none">
-      {/* Vignette */}
       <div className="absolute inset-0 [mask-image:radial-gradient(70%_60%_at_50%_40%,black,transparent)] bg-black/5 dark:bg-white/5" />
-      {/* Dotted grid */}
       <div
         aria-hidden
         className="absolute inset-0 opacity-[0.07] dark:opacity-[0.08]"
@@ -141,17 +148,16 @@ function Ball({
   parallaxY,
 }: {
   size: number;
-  className?: string; // absolute positioning
+  className?: string;
   floatDelay?: number;
   speed?: number;
   rotate?: boolean;
-  parallaxY?: number; // additional translateY from scroll
+  parallaxY?: number;
 }) {
   const prefersReduced = useReducedMotion();
   return (
     <div className={["absolute", className].filter(Boolean).join(" ")}>
       <div className="relative">
-        {/* PNG ball */}
         <motion.div
           animate={prefersReduced ? undefined : { y: [0, -14, 0] }}
           transition={
@@ -186,7 +192,6 @@ function Ball({
             />
           </motion.div>
         </motion.div>
-        {/* Shadow pulse */}
         {!prefersReduced && (
           <motion.div
             className="mx-auto mt-1 h-2 w-16 rounded-full bg-black/25 dark:bg-black/40 blur-md"
@@ -206,12 +211,12 @@ function Ball({
 
 function Glow({
   className,
-  color = "255,215,0", // gold
+  color = "255,215,0",
   strength = 0.5,
 }: {
   className?: string;
-  color?: string; // r,g,b
-  strength?: number; // 0..1
+  color?: string;
+  strength?: number;
 }) {
   return (
     <div
@@ -239,17 +244,14 @@ function Glow({
 /* ----------------------------- Left cluster ----------------------------- */
 function BallsClusterLeft() {
   const { scrollYProgress } = useScroll();
-  // Subtle parallax for the left cluster
   const p1 = useTransform(scrollYProgress, [0, 1], [0, 16]);
   const p2 = useTransform(scrollYProgress, [0, 1], [0, 24]);
 
   return (
     <>
-      {/* Glows behind text */}
       <Glow className="-z-0 -left-12 top-10 h-44 w-44" strength={0.35} />
       <Glow className="-z-0 left-28 -top-8 h-36 w-36" strength={0.25} />
 
-      {/* 5 floating balls with varied sizes/timings */}
       <Ball
         size={44}
         className="-top-6 -left-4 sm:-left-6 opacity-20"
@@ -289,8 +291,6 @@ function BallsClusterLeft() {
 /* ----------------------------- Right cluster (over image) ----------------------------- */
 function BallsClusterRight() {
   const prefersReduced = useReducedMotion();
-
-  // Orbit animation for one ball
   const orbit = prefersReduced
     ? {}
     : {
@@ -300,11 +300,9 @@ function BallsClusterRight() {
 
   return (
     <>
-      {/* top-right subtle glows */}
       <Glow className="top-4 right-6 h-28 w-28" strength={0.25} />
       <Glow className="bottom-8 right-8 h-40 w-40" strength={0.35} />
 
-      {/* Floating singles */}
       <Ball
         size={42}
         className="hidden sm:block top-4 right-5 opacity-35"
@@ -325,7 +323,6 @@ function BallsClusterRight() {
         speed={2.0}
       />
 
-      {/* Orbit group */}
       <div className="absolute left-6 bottom-6 w-28 h-28 opacity-40">
         <motion.div
           className="relative w-full h-full"
