@@ -2,11 +2,37 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 import Navbar from "./Navbar";
-import { Target, Triangle, Medal } from "lucide-react"; // ⬅️ lucide icons
+import {
+  Target,
+  Triangle,
+  Medal,
+  ArrowUpRight,
+  ArrowBigRightDash,
+} from "lucide-react"; // ⬅️ lucide icons
+import React from "react";
 
 export default function HeroLanding() {
+  const controls = useAnimation();
+  const [isPlaying, setIsPlaying] = React.useState(true);
+
+  // start/stop the slow zoom loop
+  React.useEffect(() => {
+    if (isPlaying) {
+      controls.start({
+        scale: [1, 1.1, 1], // slightly deeper zoom
+        transition: {
+          duration: 8, // half the duration → 2x faster
+          ease: "easeInOut",
+          repeat: Infinity,
+        },
+      });
+    } else {
+      controls.stop();
+    }
+  }, [controls, isPlaying]);
+
   return (
     <section className="relative overflow-x-hidden">
       {/* NEW: stop any horizontal scroll */}
@@ -64,10 +90,57 @@ export default function HeroLanding() {
             >
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 rounded-xl bg-white text-neutral-900 font-semibold px-5 py-3 ring-1 ring-black/10 hover:-translate-y-0.5 hover:shadow-xl transition"
+                className="
+      group inline-flex items-center gap-2
+      font-normal
+      text-[clamp(14px,2.5vw,18px)]
+      
+      hover:border-white/60
+      transition-all duration-300
+      transform will-change-transform
+      hover:scale-[1.03]
+    "
               >
-                Get Started
+                {/* animated gradient text */}
+                <span
+                  className="
+        bg-gradient-to-r from-[#cd142a] via-[#ffffff] to-[#000000]
+        bg-[length:200%_auto]
+        bg-clip-text text-transparent
+        animate-gradientFlow
+        transition-transform duration-300 group-hover:scale-105
+      "
+                >
+                  Start Training Now
+                </span>
+
+                <ArrowBigRightDash
+                  className="
+        h-4 w-4 mt-[1px]
+        text-white/90
+        transition-transform duration-500 will-change-transform
+        group-hover:translate-x-[10px]
+      "
+                />
               </Link>
+
+              {/* gradient animation keyframes */}
+              <style jsx>{`
+                @keyframes gradientFlow {
+                  0% {
+                    background-position: 0% center;
+                  }
+                  50% {
+                    background-position: 100% center;
+                  }
+                  100% {
+                    background-position: 0% center;
+                  }
+                }
+                .animate-gradientFlow {
+                  animation: gradientFlow 4s ease-in-out infinite;
+                }
+              `}</style>
             </motion.div>
           </div>
 
@@ -78,31 +151,53 @@ export default function HeroLanding() {
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
             className="relative rounded-2xl overflow-hidden bg-white/5 ring-1 ring-white/15 backdrop-blur-md"
           >
-            <div className="aspect-video w-full">
-              <Image
-                src="/hero-video-thumb.jpg"
-                alt="Training clip"
-                fill
-                sizes="(min-width:1024px) 40vw, 100vw"
-                className="object-cover"
-                priority
-              />
+            {/* image wrapper that performs the zoom animation */}
+            <div className="aspect-video w-full overflow-hidden">
+              <motion.div
+                animate={controls}
+                style={{ width: "100%", height: "100%", position: "relative" }}
+              >
+                <Image
+                  src="/hero-video-thumb.jpg"
+                  alt="Training clip"
+                  fill
+                  sizes="(min-width:1024px) 40vw, 100vw"
+                  className="object-cover"
+                  priority
+                />
+              </motion.div>
             </div>
 
-            {/* play button */}
+            {/* play / pause button */}
             <button
-              aria-label="Play video"
+              type="button"
+              onClick={() => setIsPlaying((v) => !v)}
+              aria-label={isPlaying ? "Pause animation" : "Play animation"}
               className="absolute left-4 bottom-4 sm:left-6 sm:bottom-6 grid place-items-center h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-white/90 text-neutral-900 shadow-[0_8px_24px_rgba(0,0,0,0.35)] hover:scale-105 transition"
             >
-              <svg
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden
-              >
-                <path d="M8 5v14l11-7z" />
-              </svg>
+              {isPlaying ? (
+                // Pause icon
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden
+                >
+                  <path d="M6 5h4v14H6zM14 5h4v14h-4z" />
+                </svg>
+              ) : (
+                // Play icon
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden
+                >
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              )}
             </button>
           </motion.div>
         </div>
