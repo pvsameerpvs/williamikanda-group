@@ -1,10 +1,12 @@
 "use client";
+import React from "react";
 import Image from "next/image";
 import {
   motion,
   useReducedMotion,
   useScroll,
   useTransform,
+  useAnimation,
 } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { usePathname } from "next/navigation";
@@ -56,7 +58,7 @@ export default function SectionAbout() {
             isHome ? "py-12 md:py-0" : "py-16 md:py-20",
           ].join(" ")}
         >
-          {/* LEFT: centered text + decorative balls */}
+          {/* LEFT: centered text + balls */}
           <motion.div
             variants={slideLeft}
             initial="hidden"
@@ -80,7 +82,7 @@ export default function SectionAbout() {
             </div>
           </motion.div>
 
-          {/* RIGHT: image + overlay balls */}
+          {/* RIGHT: image + balls */}
           <motion.div
             variants={slideRight}
             initial="hidden"
@@ -139,11 +141,12 @@ function BackgroundDecor() {
 }
 
 /* ----------------------------- Reusable Pieces ----------------------------- */
+/** DX-Ball style: click/tap any ball to bounce fast around screen edges, then return */
 function Ball({
   size,
   className,
   floatDelay = 0,
-  speed = 2.2,
+  speed = 2.2, // idle bob speed
   rotate = false,
   parallaxY,
 }: {
@@ -155,32 +158,141 @@ function Ball({
   parallaxY?: number;
 }) {
   const prefersReduced = useReducedMotion();
+  const [free, setFree] = React.useState(false);
+  const shellRef = React.useRef<HTMLDivElement | null>(null);
+
+  // viewport position when in free mode
+  const [pos, setPos] = React.useState<{ top: number; left: number }>({
+    top: 0,
+    left: 0,
+  });
+
+  // velocity in px/s
+  const vel = React.useRef({ vx: 680, vy: 620 }); // FAST
+  const last = React.useRef<number | null>(null);
+  const sizeRef = React.useRef({ w: size, h: size });
+
+  // spring back controls
+  const springControls = useAnimation();
+
+  const startRun = React.useCallback(
+    (ev?: React.MouseEvent) => {
+      if (prefersReduced || free) return;
+      const shell = shellRef.current;
+      if (!shell) return;
+
+      const rect = shell.getBoundingClientRect();
+      sizeRef.current = { w: rect.width, h: rect.height };
+
+      setPos({ top: rect.top, left: rect.left });
+      setFree(true);
+
+      // initial direction: from click vector or random
+      const angle = ev
+        ? Math.atan2(
+            ev.clientY - (rect.top + rect.height / 2) || 1,
+            ev.clientX - (rect.left + rect.width / 2) || 1
+          )
+        : Math.random() * Math.PI * 2;
+
+      const speedMag = 820; // even faster burst
+      vel.current = {
+        vx: Math.cos(angle) * speedMag,
+        vy: Math.sin(angle) * speedMag,
+      };
+      last.current = null;
+
+      // stop after a while and spring back
+      window.setTimeout(() => setFree(false), 3800);
+    },
+    [free, prefersReduced]
+  );
+
+  // RAF loop for bouncing when free
+  React.useEffect(() => {
+    if (!free) return;
+    let raf = 0;
+
+    const tick = (ts: number) => {
+      if (last.current == null) {
+        last.current = ts;
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      const dt = (ts - last.current) / 1000;
+      last.current = ts;
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const { w, h } = sizeRef.current;
+
+      let { left, top } = pos;
+      let { vx, vy } = vel.current;
+
+      left += vx * dt;
+      top += vy * dt;
+
+      if (left <= 0) {
+        left = 0;
+        vx = Math.abs(vx);
+      } else if (left + w >= vw) {
+        left = vw - w;
+        vx = -Math.abs(vx);
+      }
+      if (top <= 0) {
+        top = 0;
+        vy = Math.abs(vy);
+      } else if (top + h >= vh) {
+        top = vh - h;
+        vy = -Math.abs(vy);
+      }
+
+      vel.current = { vx, vy };
+      setPos({ left, top });
+
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [free, pos]);
+
+  // when leaving free mode, spring back to origin smoothly
+  React.useEffect(() => {
+    if (!free) {
+      springControls.start({
+        x: 0,
+        y: 0,
+        scale: 1,
+        transition: { type: "spring", stiffness: 260, damping: 22 },
+      });
+    }
+  }, [free, springControls]);
+
   return (
-    <div className={["absolute", className].filter(Boolean).join(" ")}>
-      <div className="relative">
-        <motion.div
-          animate={prefersReduced ? undefined : { y: [0, -14, 0] }}
-          transition={
-            prefersReduced
-              ? undefined
-              : {
-                  duration: speed,
-                  repeat: Infinity,
-                  delay: floatDelay,
-                  ease: "easeInOut",
-                }
-          }
-          style={parallaxY ? { y: parallaxY } : undefined}
+    <div
+      className={["absolute", className].filter(Boolean).join(" ")}
+      ref={shellRef}
+    >
+      {/* free-floating overlay clone while in "free" mode */}
+      {free && (
+        <div
+          className="fixed z-[60] pointer-events-none"
+          style={{
+            top: pos.top,
+            left: pos.left,
+            width: size,
+            height: size,
+          }}
         >
           <motion.div
-            animate={
-              rotate && !prefersReduced ? { rotate: [0, 8, -6, 0] } : undefined
-            }
-            transition={
-              rotate
-                ? { duration: speed * 1.6, repeat: Infinity, ease: "easeInOut" }
-                : undefined
-            }
+            className="will-change-transform"
+            animate={{ scale: 1.02 }}
+            transition={{
+              repeat: Infinity,
+              duration: 0.6,
+              repeatType: "mirror",
+            }}
           >
             <Image
               src="/animationBall.png"
@@ -189,10 +301,65 @@ function Ball({
               height={size}
               className="object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)] dark:drop-shadow-[0_8px_24px_rgba(255,255,255,0.25)] select-none"
               priority
+              draggable={false}
             />
           </motion.div>
+        </div>
+      )}
+
+      {/* Normal in-flow ball (click to start bounce) */}
+      <div className="relative">
+        <motion.div
+          onClick={startRun}
+          onPointerDown={(e) => e.stopPropagation()}
+          className="cursor-pointer"
+          animate={springControls}
+          whileTap={{ scale: prefersReduced ? 1 : 0.94 }}
+        >
+          <motion.div
+            animate={prefersReduced || free ? undefined : { y: [0, -14, 0] }}
+            transition={
+              prefersReduced || free
+                ? undefined
+                : {
+                    duration: speed,
+                    repeat: Infinity,
+                    delay: floatDelay,
+                    ease: "easeInOut",
+                  }
+            }
+            style={parallaxY && !free ? { y: parallaxY } : undefined}
+          >
+            <motion.div
+              animate={
+                rotate && !prefersReduced && !free
+                  ? { rotate: [0, 8, -6, 0] }
+                  : undefined
+              }
+              transition={
+                rotate && !free
+                  ? {
+                      duration: speed * 1.6,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }
+                  : undefined
+              }
+            >
+              <Image
+                src="/animationBall.png"
+                alt=""
+                width={size}
+                height={size}
+                className="object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)] dark:drop-shadow-[0_8px_24px_rgba(255,255,255,0.25)] select-none"
+                priority
+                draggable={false}
+              />
+            </motion.div>
+          </motion.div>
         </motion.div>
-        {!prefersReduced && (
+
+        {!prefersReduced && !free && (
           <motion.div
             className="mx-auto mt-1 h-2 w-16 rounded-full bg-black/25 dark:bg-black/40 blur-md"
             animate={{ opacity: [0.32, 0.18, 0.32] }}
@@ -241,7 +408,7 @@ function Glow({
   );
 }
 
-/* ----------------------------- Left cluster ----------------------------- */
+/* ----------------------------- Left cluster (ONLY 2 BALLS) ----------------------------- */
 function BallsClusterLeft() {
   const { scrollYProgress } = useScroll();
   const p1 = useTransform(scrollYProgress, [0, 1], [0, 16]);
@@ -249,97 +416,50 @@ function BallsClusterLeft() {
 
   return (
     <>
-      <Glow className="-z-0 -left-12 top-10 h-44 w-44" strength={0.35} />
-      <Glow className="-z-0 left-28 -top-8 h-36 w-36" strength={0.25} />
+      <Glow className="-z-0 -left-12 top-10 h-44 w-44" strength={0.3} />
+      <Glow className="-z-0 left-28 -top-8 h-36 w-36" strength={0.22} />
 
       <Ball
-        size={44}
-        className="-top-6 -left-4 sm:-left-6 opacity-20"
-        floatDelay={0.0}
+        size={56}
+        className="-top-4 -left-4 sm:-left-6 opacity-25"
+        floatDelay={0.05}
+        speed={2.2}
         parallaxY={p1.get()}
       />
       <Ball
         size={72}
-        className="top-12 -left-10 sm:-left-12 opacity-20"
-        floatDelay={0.35}
-        speed={2.4}
-      />
-      <Ball
-        size={54}
-        className="top-28 left-20 opacity-15 hidden sm:block"
-        floatDelay={0.6}
-        speed={2.1}
-        rotate
-      />
-      <Ball
-        size={38}
-        className="top-40 -left-2 opacity-25"
-        floatDelay={0.8}
-        speed={2.0}
-      />
-      <Ball
-        size={62}
-        className="top-4 left-28 opacity-15 hidden md:block"
-        floatDelay={0.2}
+        className="top-20 left-14 opacity-20"
+        floatDelay={0.4}
         speed={2.6}
+        rotate
         parallaxY={p2.get()}
       />
     </>
   );
 }
 
-/* ----------------------------- Right cluster (over image) ----------------------------- */
+/* ----------------------------- Right cluster (ONLY 2 BALLS) ----------------------------- */
 function BallsClusterRight() {
   const prefersReduced = useReducedMotion();
-  const orbit = prefersReduced
-    ? {}
-    : {
-        rotate: 360,
-        transition: { duration: 16, ease: "linear", repeat: Infinity },
-      };
 
   return (
     <>
-      <Glow className="top-4 right-6 h-28 w-28" strength={0.25} />
-      <Glow className="bottom-8 right-8 h-40 w-40" strength={0.35} />
+      <Glow className="top-4 right-6 h-28 w-28" strength={0.22} />
+      <Glow className="bottom-8 right-8 h-40 w-40" strength={0.3} />
 
       <Ball
-        size={42}
-        className="hidden sm:block top-4 right-5 opacity-35"
-        floatDelay={0.2}
-        speed={2.2}
-      />
-      <Ball
-        size={58}
-        className="hidden md:block top-20 right-16 opacity-25"
-        floatDelay={0.6}
+        size={62}
+        className="top-6 right-8 opacity-30"
+        floatDelay={0.15}
         speed={2.3}
-        rotate
       />
       <Ball
         size={48}
-        className="bottom-10 right-8 opacity-35"
-        floatDelay={0.1}
-        speed={2.0}
+        className="bottom-10 right-12 opacity-35"
+        floatDelay={0.35}
+        speed={2.1}
+        rotate
       />
-
-      <div className="absolute left-6 bottom-6 w-28 h-28 opacity-40">
-        <motion.div
-          className="relative w-full h-full"
-          animate={orbit as any}
-          style={{ transformOrigin: "50% 50%" }}
-        >
-          <div className="absolute inset-0 rounded-full ring-1 ring-white/30 dark:ring-white/10" />
-          <Image
-            src="/animationBall.png"
-            alt=""
-            width={18}
-            height={18}
-            className="absolute -top-2 left-1/2 -translate-x-1/2 select-none"
-            priority
-          />
-        </motion.div>
-      </div>
     </>
   );
 }

@@ -4,13 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Navbar from "./Navbar";
+import { Target, Triangle, Medal } from "lucide-react"; // ⬅️ lucide icons
 
 export default function HeroLanding() {
   return (
     <section className="relative overflow-x-hidden">
-      {" "}
       {/* NEW: stop any horizontal scroll */}
       <Navbar />
+
       {/* background image */}
       <div className="absolute inset-0 -z-10">
         <Image
@@ -23,12 +24,10 @@ export default function HeroLanding() {
         />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.25),rgba(0,0,0,0.85))]" />
         {/* changed m-3 -> inset-3 so the inner frame never causes overflow */}
-        <div className="absolute inset-3 ring-1 ring-white/10 rounded-[28px] pointer-events-none" />{" "}
-        {/* NEW */}
+        <div className="absolute inset-3 ring-1 ring-white/10 rounded-[28px] pointer-events-none" />
       </div>
+
       <div className="container-pad mx-auto max-w-7xl pt-6 md:pt-10 lg:pt-12 pb-12">
-        {" "}
-        {/* NEW: a touch less top padding since the nav is inside */}
         {/* top row: headline + video card */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           {/* left copy */}
@@ -37,7 +36,7 @@ export default function HeroLanding() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className="font-extrabold leading-[0.95] text-[clamp(32px,8vw,72px)]" /* NEW: clamp so it never overflows */
+              className="font-extrabold leading-[0.95] text-[clamp(32px,8vw,72px)]"
             >
               <span className="block">BECOME A</span>
               <span className="block [text-shadow:_0_2px_0_rgba(0,0,0,0.4)]">
@@ -52,7 +51,7 @@ export default function HeroLanding() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
-              className="mt-4 text-white/80 text-[clamp(14px,2.5vw,18px)] max-w-[55ch]" /* NEW */
+              className="mt-4 text-white/80 text-[clamp(14px,2.5vw,18px)] max-w-[55ch]"
             >
               With professional world-class player
             </motion.p>
@@ -80,8 +79,6 @@ export default function HeroLanding() {
             className="relative rounded-2xl overflow-hidden bg-white/5 ring-1 ring-white/15 backdrop-blur-md"
           >
             <div className="aspect-video w-full">
-              {" "}
-              {/* NEW: guarantees no overflow */}
               <Image
                 src="/hero-video-thumb.jpg"
                 alt="Training clip"
@@ -109,9 +106,9 @@ export default function HeroLanding() {
             </button>
           </motion.div>
         </div>
+
         {/* bottom: three feature cards */}
         <div className="mt-10 md:mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-          {" "}
           {/* NEW: tighter gaps on small screens */}
           <FeatureCard
             title="Self improvement"
@@ -126,13 +123,23 @@ export default function HeroLanding() {
           <FeatureCard
             title="Professionals"
             body="Every footballer is constantly sets new goals & achieves them"
-            tag="PRO"
+            tag="PRO" // shows Medal icon automatically if no icon passed
           />
         </div>
       </div>
     </section>
   );
 }
+
+// ---- FeatureCard using lucide-react icons ----
+
+const ICONS = {
+  target: Target,
+  triangle: Triangle,
+  medal: Medal,
+} as const;
+
+type IconKey = keyof typeof ICONS;
 
 function FeatureCard({
   title,
@@ -143,8 +150,15 @@ function FeatureCard({
   title: string;
   body: string;
   tag?: string;
-  icon?: "target" | "triangle";
+  icon?: IconKey;
 }) {
+  // If no icon but tag is PRO, fall back to Medal
+  const ResolvedIcon = icon
+    ? ICONS[icon]
+    : tag?.toUpperCase() === "PRO"
+    ? Medal
+    : null;
+
   return (
     <motion.div
       initial={{ y: 16, opacity: 0 }}
@@ -162,17 +176,11 @@ function FeatureCard({
         </span>
       )}
 
-      <div className="mb-3 opacity-90">
-        {icon === "target" ? (
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 8a4 4 0 104 4h2a6 6 0 11-6-6v2z" />
-          </svg>
-        ) : icon === "triangle" ? (
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 4l8 16H4z" />
-          </svg>
-        ) : null}
-      </div>
+      {ResolvedIcon && (
+        <div className="mb-3 opacity-90">
+          <ResolvedIcon width={26} height={26} />
+        </div>
+      )}
 
       <h3 className="text-base sm:text-lg font-semibold">{title}</h3>
       <p className="mt-1 text-sm text-white/80">{body}</p>
