@@ -455,20 +455,20 @@ export default function Navbar() {
                 ))}
 
                 <div className="pt-2 flex items-center justify-between">
-                  <Link
+                  {/* <Link
                     href="/signin"
                     onClick={() => setOpen(false)}
                     className="font-semibold"
                   >
                     Sign in
-                  </Link>
-                  <Link
+                  </Link> */}
+                  {/* <Link
                     href="/join"
                     onClick={() => setOpen(false)}
                     className="inline-flex items-center justify-center h-10 px-4 rounded-full bg-white text-neutral-900 text-sm font-semibold"
                   >
                     Become a member
-                  </Link>
+                  </Link> */}
                   <ThemeToggle />
                 </div>
               </motion.div>
