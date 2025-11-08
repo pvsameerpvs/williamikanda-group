@@ -216,7 +216,7 @@ export default function Navbar() {
                     className="
     relative flex items-center justify-center
     rounded-full p-[2px] /* 1 px extra padding */
-    bg-white/10 shadow-md
+    bg-white/90 shadow-md
   "
                   >
                     <div className="relative w-[58px] h-[58px] sm:w-[64px] sm:h-[64px] lg:w-[72px] lg:h-[72px]">
@@ -352,7 +352,7 @@ export default function Navbar() {
                   <div
                     className="
         absolute inset-0
-        bg-white/10
+        bg-white/90
         skew-x-[-12deg]
         rounded-md
         shadow-md

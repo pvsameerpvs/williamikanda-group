@@ -43,7 +43,7 @@ const countries: Record<CountryKey, Country> = {
   },
   ae: {
     flag: "🇦🇪",
-    name: "United Arab Emirates (Dubai)",
+    name: "United Arab Emirates",
     badge: "Pro Pathway (D3)",
     headline: "Dubai Elite Blocks & Pro-Ready Environment",
     paragraph:
@@ -54,7 +54,7 @@ const countries: Record<CountryKey, Country> = {
       "Seasonal elite camps & friendlies",
       "Shortlists for professional evaluations",
     ],
-    location: "Dubai, UAE",
+    location: "Dubai, Sharja, Ajman",
     image: "/int2.jpg",
   },
   pt: {
@@ -114,11 +114,10 @@ export default function CountryProgramsTabs() {
       <div
         className="
   mx-auto w-full max-w-5xl
-  rounded-[999px]
+  
   px-2 py-2
-  bg-[#5B0C11]/25 text-white
-  shadow-[0_10px_30px_rgba(91,12,17,0.25)]
-  backdrop-blur-md
+   text-white
+  
   transition-colors duration-300
   dark:bg-[#5B0C11]/20 dark:text-white
   dark:shadow-[0_18px_44px_rgba(91,12,17,0.35)]
