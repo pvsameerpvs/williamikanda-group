@@ -94,9 +94,6 @@ export default function Footer() {
               <li>
                 <FooterLink href="/contact">Contact</FooterLink>
               </li>
-              <li>
-                <FooterLink href="/careers">Careers</FooterLink>
-              </li>
             </ul>
           </div>
 
@@ -107,25 +104,21 @@ export default function Footer() {
             </h5>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
-                <FooterLink href="/services#academy">
+                <FooterLink href="/contact#academy">
                   Football Academy
                 </FooterLink>
               </li>
               <li>
-                <FooterLink href="/services#training">
+                <FooterLink href="/about#training">
                   Techlab & Training
                 </FooterLink>
               </li>
               <li>
                 <FooterLink href="/services#transport">Transport</FooterLink>
               </li>
+
               <li>
-                <FooterLink href="/services#catering">Catering</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="/services#accessories">
-                  Accessories
-                </FooterLink>
+                <FooterLink href="/contact#accessories">Accessories</FooterLink>
               </li>
             </ul>
           </div>
@@ -143,22 +136,30 @@ export default function Footer() {
               </p>
               <p className="flex items-start gap-2 text-black/70 dark:text-white/75">
                 <Phone size={16} className="mt-0.5 shrink-0" />
-                <a href="tel:+971000000000" className="hover:underline">
-                  +971 00 000 0000
+                <a href="tel:+971565822845" className="hover:underline">
+                  +971565822845
+                </a>
+              </p>
+              <p className="flex items-start gap-2 text-black/70 dark:text-white/75">
+                <Phone size={16} className="mt-0.5 shrink-0" />
+                <a href="tel:+971507084372" className="hover:underline">
+                  +971507084372
+                </a>
+              </p>
+              <p className="flex items-start gap-2 text-black/70 dark:text-white/75">
+                <Phone size={16} className="mt-0.5 shrink-0" />
+                <a href="tel:+971543190427" className="hover:underline">
+                  +971543190427
                 </a>
               </p>
               <p className="flex items-start gap-2 text-black/70 dark:text-white/75">
                 <Mail size={16} className="mt-0.5 shrink-0" />
                 <a
-                  href="mailto:info@williamikanda.group"
+                  href="mailto:williamikanda9@gmail.com"
                   className="hover:underline"
                 >
-                  info@williamikanda.group
+                  williamikanda9@gmail.com
                 </a>
-              </p>
-              <p className="flex items-start gap-2 text-black/70 dark:text-white/75">
-                <Clock size={16} className="mt-0.5 shrink-0" />
-                <span>Sun–Thu, 9:00–18:00 (Gulf Standard Time)</span>
               </p>
             </div>
 
@@ -181,25 +182,6 @@ export default function Footer() {
       </div>
 
       {/* bottom bar */}
-      <div className="border-t border-black/10 dark:border-white/10">
-        <div className="container-pad flex flex-col md:flex-row items-center justify-between gap-3 py-4 text-xs sm:text-sm text-black/60 dark:text-white/60">
-          <p>
-            © {year} WILLIAMIKANDA GROUP —{" "}
-            {t.footer?.rights ?? "All rights reserved."}
-          </p>
-          <div className="flex items-center gap-4">
-            <Link href="/privacy" className="hover:underline">
-              Privacy
-            </Link>
-            <Link href="/terms" className="hover:underline">
-              Terms
-            </Link>
-            <Link href="/cookies" className="hover:underline">
-              Cookies
-            </Link>
-          </div>
-        </div>
-      </div>
     </footer>
   );
 }

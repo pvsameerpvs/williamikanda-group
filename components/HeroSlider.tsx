@@ -10,20 +10,19 @@ import {
   Medal,
   ArrowUpRight,
   ArrowBigRightDash,
-} from "lucide-react"; // ⬅️ lucide icons
+} from "lucide-react";
 import React from "react";
 
 export default function HeroLanding() {
   const controls = useAnimation();
   const [isPlaying, setIsPlaying] = React.useState(true);
 
-  // start/stop the slow zoom loop
   React.useEffect(() => {
     if (isPlaying) {
       controls.start({
-        scale: [1, 1.1, 1], // slightly deeper zoom
+        scale: [1, 1.1, 1],
         transition: {
-          duration: 8, // half the duration → 2x faster
+          duration: 8,
           ease: "easeInOut",
           repeat: Infinity,
         },

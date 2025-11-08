@@ -2,29 +2,34 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { AnimatePresence, motion, useAnimation } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useAnimation,
+  useMotionValueEvent,
+  useScroll,
+} from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, Search, X } from "lucide-react";
 import clsx from "clsx";
 import { ThemeToggle } from "./ThemeToggle";
+import React from "react";
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
 
-  // search UI states
+  // search UI
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // show/hide on scroll (fixed header)
+  // show/hide header on scroll
   const controls = useAnimation();
   const lastY = useRef(0);
-
-  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     const onScroll = () => {
@@ -40,7 +45,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [controls]);
 
-  // focus input when opening search
+  // focus input when search opens
   useEffect(() => {
     if (searchOpen) {
       const t = setTimeout(() => inputRef.current?.focus(), 120);
@@ -48,7 +53,7 @@ export default function Navbar() {
     }
   }, [searchOpen]);
 
-  // --- simple find-on-page underline like Ctrl+F ---
+  // --- inline "find on page" highlighter ---
   const MARK_CLASS = "js-find-mark";
   function clearMarks() {
     document.querySelectorAll(`.${MARK_CLASS}`).forEach((el) => {
@@ -58,7 +63,6 @@ export default function Navbar() {
       parent.removeChild(el);
     });
   }
-
   function highlight(term: string) {
     clearMarks();
     if (!term.trim()) return;
@@ -67,23 +71,21 @@ export default function Navbar() {
       document.body,
       NodeFilter.SHOW_TEXT,
       {
-        acceptNode(node: { parentElement: any; nodeValue: string }) {
-          const p = node.parentElement;
+        acceptNode(node: any) {
+          const p = node.parentElement as HTMLElement | null;
           if (!p) return NodeFilter.FILTER_REJECT;
           const tag = p.tagName;
           if (
             ["SCRIPT", "STYLE", "NOSCRIPT", "TEXTAREA", "INPUT"].includes(tag)
           )
             return NodeFilter.FILTER_REJECT;
-          if (p.closest("header") || p.closest("#mobile-drawer")) {
+          if (p.closest("header") || p.closest("#mobile-drawer"))
             return NodeFilter.FILTER_REJECT;
-          }
           if (
             !node.nodeValue ||
             !node.nodeValue.toLowerCase().includes(term.toLowerCase())
-          ) {
+          )
             return NodeFilter.FILTER_REJECT;
-          }
           return NodeFilter.FILTER_ACCEPT;
         },
       } as any
@@ -92,20 +94,20 @@ export default function Navbar() {
     const ranges: Range[] = [];
     const lower = term.toLowerCase();
     let n: Node | null;
+    // @ts-ignore
     while ((n = walker.nextNode())) {
-      const text = n.nodeValue!;
+      const text = (n as Text).nodeValue!;
       let start = 0;
       for (;;) {
         const idx = text.toLowerCase().indexOf(lower, start);
         if (idx === -1) break;
         const r = document.createRange();
-        r.setStart(n, idx);
-        r.setEnd(n, idx + term.length);
+        r.setStart(n!, idx);
+        r.setEnd(n!, idx + term.length);
         ranges.push(r);
         start = idx + term.length;
       }
     }
-
     ranges.forEach((r) => {
       const mark = document.createElement("mark");
       mark.className = MARK_CLASS;
@@ -120,9 +122,7 @@ export default function Navbar() {
     });
 
     const first = document.querySelector<HTMLElement>(`.${MARK_CLASS}`);
-    if (first) {
-      first.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
+    if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   function onSearchSubmit(e: React.FormEvent) {
@@ -147,7 +147,7 @@ export default function Navbar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Animation presets
+  // Entrance animations
   const bar = {
     hidden: { y: -24, opacity: 0, scale: 0.98 },
     show: {
@@ -170,8 +170,19 @@ export default function Navbar() {
     { href: "/", label: "Home" },
     { href: "/about", label: "About" },
     { href: "/services", label: "Services" },
-    { href: "/contact", label: "Conatct" },
+    { href: "/contact", label: "Contact" },
   ];
+
+  // Background logic
+  const { scrollY } = useScroll();
+  const [scrolled, setScrolled] = React.useState(false);
+  useMotionValueEvent(scrollY, "change", (latest) => setScrolled(latest > 50));
+
+  const isNonHome = pathname !== "/";
+  const wantsSolid = isNonHome || scrolled; // solid on non-home or after scroll on home
+
+  const sharedBg = wantsSolid ? "#54090e" : "rgba(0,0,0,0)"; // same for desktop + mobile
+  const desktopShadow = wantsSolid ? "0 2px 10px rgba(0,0,0,0.25)" : "none";
 
   return (
     <>
@@ -179,18 +190,22 @@ export default function Navbar() {
       <header className="fixed inset-x-0 top-0 z-50 pointer-events-none pt-3">
         <motion.div animate={controls} className="pointer-events-auto">
           <div className="container-pad">
-            {/* Desktop bar -> now only from lg and up */}
+            {/* Desktop bar (≥ lg) */}
             <motion.nav
               variants={bar}
               initial="hidden"
               animate="show"
               className={clsx(
-                "hidden lg:flex items-center justify-between", // ⬅️ changed md:flex -> lg:flex
+                "hidden lg:flex items-center justify-between",
                 "h-14 lg:h-16 mt-3",
                 "rounded-2xl text-white",
-                "ring-1 ring-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.35)] px-3 lg:px-4"
+                "px-3 lg:px-4",
+                "transition-all duration-500"
               )}
-              style={{ backgroundColor: "rgba(218, 2, 14, 0.35)" }}
+              style={{
+                backgroundColor: sharedBg,
+                boxShadow: desktopShadow,
+              }}
             >
               {/* Left: brand */}
               <motion.div variants={items} custom={0} className="pl-1 lg:pl-2">
@@ -203,7 +218,7 @@ export default function Navbar() {
                     "
                     title="WILLIAMIKANDA GROUP."
                   >
-                    WILLIAMIKANDA<span className="opacity-90">GROUP</span>
+                    WILLIAMIKANDA<span className="opacity-90"> GROUP</span>
                     <span className="text-white">.</span>
                   </span>
                   <span className="sr-only">Home</span>
@@ -232,7 +247,7 @@ export default function Navbar() {
                         {(isActive || isHover) && (
                           <motion.span
                             layoutId="nav-bubble"
-                            className="absolute inset-[-8px_-12px] lg:inset-[-8px_-14px] rounded-full bg-white/10 ring-1 ring-white/15 shadow-[0_6px_18px_rgba(0,0,0,0.25)]"
+                            className="absolute inset-[-8px_-12px] lg:inset-[-8px_-14px] rounded-full bg-white/10"
                             transition={{
                               type: "spring",
                               stiffness: 420,
@@ -247,7 +262,7 @@ export default function Navbar() {
                 })}
               </div>
 
-              {/* Right: search | sign in | CTA */}
+              {/* Right: search | theme */}
               <div className="flex items-center gap-2 lg:gap-3 pr-2 lg:pr-3">
                 {/* Compact expanding search pill */}
                 <div className="relative flex items-center">
@@ -265,7 +280,7 @@ export default function Navbar() {
                     )}
                   >
                     <div
-                      className="h-9 lg:h-10 rounded-full flex items-center gap-2 pl-3 pr-2 bg-white/90 text-neutral-900 ring-1 ring-black/10"
+                      className="h-9 lg:h-10 rounded-full flex items-center gap-2 pl-3 pr-2 bg-white/90 text-neutral-900"
                       style={{ width: 200 }}
                     >
                       <Search size={16} className="opacity-70" />
@@ -298,60 +313,28 @@ export default function Navbar() {
                     aria-label="Search"
                     onClick={() => setSearchOpen((s) => !s)}
                     whileTap={{ scale: 0.96 }}
-                    className="grid place-items-center h-9 w-9 lg:h-10 lg:w-10 rounded-full bg-white/15 ring-1 ring-white/20 hover:bg-white/20 transition"
+                    className="grid place-items-center h-9 w-9 lg:h-10 lg:w-10 rounded-full bg-white/15 hover:bg-white/20 transition"
                     title="Search"
                   >
                     <Search size={18} />
                   </motion.button>
                 </div>
 
-                <div
-                  className="hidden sm:block h-6 w-px bg-white/25"
-                  aria-hidden
-                />
-
-                {/* <motion.div
-                  variants={items}
-                  custom={links.length + 2}
-                  className="hidden sm:block"
-                >
-                  <Link
-                    href="/signin"
-                    className="text-sm font-semibold text-white/90 hover:text-white"
-                  >
-                    Sign in
-                  </Link>
-                </motion.div> */}
-
                 <ThemeToggle />
-
-                {/* <motion.div variants={items} custom={links.length + 3}>
-                  <Link
-                    href="/join"
-                    className={clsx(
-                      "inline-flex items-center justify-center h-9 lg:h-10 px-3.5 lg:px-4 rounded-xl",
-                      "bg-white text-neutral-900 text-sm font-semibold",
-                      "ring-1 ring-black/10 shadow-[0_10px_22px_rgba(0,0,0,0.25)]",
-                      "hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(0,0,0,0.28)] transition"
-                    )}
-                  >
-                    Become a member
-                  </Link>
-                </motion.div> */}
               </div>
             </motion.nav>
 
-            {/* Mobile/top bar -> visible up to lg */}
+            {/* Mobile/top bar (< lg) — now matches desktop (same bg, NO ring/shadow) */}
             <motion.div
               variants={bar}
               initial="hidden"
               animate="show"
               className={clsx(
-                "lg:hidden flex items-center justify-between h-12 mt-3", // ⬅️ changed md:hidden -> lg:hidden
-                "rounded-xl text-white",
-                "ring-1 ring-white/10 shadow-[0_8px_24px_rgba(0,0,0,0.32)] px-3"
+                "lg:hidden flex items-center justify-between h-12 mt-3",
+                "rounded-2xl text-white px-3",
+                "transition-all duration-500"
               )}
-              style={{ backgroundColor: "rgba(218, 2, 14, 0.35)" }}
+              style={{ backgroundColor: sharedBg }}
             >
               <Link href="/" className="inline-flex items-center">
                 <span
@@ -367,26 +350,26 @@ export default function Navbar() {
                 <button
                   aria-label="Search"
                   onClick={() => setSearchOpen((s) => !s)}
-                  className="grid place-items-center h-10 w-10 rounded-full bg-white/15 ring-1 ring-white/20"
+                  className="grid place-items-center h-10 w-10 rounded-full bg-white/15 hover:bg-white/20 transition"
                 >
                   <Search size={18} />
                 </button>
                 <button
                   onClick={() => setOpen((s) => !s)}
                   className={clsx(
-                    "h-10 w-10 grid place-items-center rounded-full ring-1 ring-white/20 transition",
+                    "h-10 w-10 grid place-items-center rounded-full transition",
                     open ? "bg-white/20" : "bg-white/15 hover:bg-white/20"
                   )}
                   aria-label="Menu"
                   aria-expanded={open}
                   aria-controls="mobile-drawer"
                 >
-                  <Menu />
+                  <Menu size={18} />
                 </button>
               </div>
             </motion.div>
 
-            {/* Mobile expanding search pill under the row (up to lg) */}
+            {/* Mobile expanding search pill */}
             <AnimatePresence>
               {searchOpen && (
                 <motion.form
@@ -394,9 +377,9 @@ export default function Navbar() {
                   initial={{ opacity: 0, height: 0, y: -6 }}
                   animate={{ opacity: 1, height: "auto", y: 0 }}
                   exit={{ opacity: 0, height: 0, y: -6 }}
-                  className="lg:hidden mt-2" // ⬅️ changed md:hidden -> lg:hidden
+                  className="lg:hidden mt-2"
                 >
-                  <div className="rounded-xl mx-1 flex items-center gap-2 pl-3 pr-2 h-11 bg-white/90 text-neutral-900 ring-1 ring-black/10">
+                  <div className="rounded-xl mx-1 flex items-center gap-2 pl-3 pr-2 h-11 bg-white/90 text-neutral-900">
                     <Search size={16} className="opacity-70" />
                     <input
                       ref={inputRef}
@@ -425,54 +408,43 @@ export default function Navbar() {
               )}
             </AnimatePresence>
 
-            {/* Mobile drawer (up to lg) */}
-            {open && (
-              <motion.div
-                id="mobile-drawer"
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                className={clsx(
-                  "lg:hidden mt-2 p-3 rounded-2xl text-white ring-1 ring-white/20 space-y-1", // ⬅️ md -> lg
-                  "bg-black/40 backdrop-blur-md shadow-[0_12px_28px_rgba(0,0,0,0.35)]"
-                )}
-              >
-                {links.map((l) => (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    onClick={() => setOpen(false)}
-                    className={clsx(
-                      "block rounded-xl px-4 py-3 transition",
-                      pathname === l.href
-                        ? "bg-white/20 font-bold"
-                        : "bg-white/10 hover:bg-white/15 font-semibold"
-                    )}
-                    aria-current={pathname === l.href ? "page" : undefined}
-                  >
-                    {l.label}
-                  </Link>
-                ))}
+            {/* Mobile drawer */}
+            <AnimatePresence>
+              {open && (
+                <motion.div
+                  id="mobile-drawer"
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className={clsx(
+                    "lg:hidden mt-2 p-3 rounded-2xl text-white space-y-1",
+                    // Subtle glass; keep it independent of header bg
+                    "bg-black/40 backdrop-blur-md"
+                  )}
+                >
+                  {links.map((l) => (
+                    <Link
+                      key={l.href}
+                      href={l.href}
+                      onClick={() => setOpen(false)}
+                      className={clsx(
+                        "block rounded-xl px-4 py-3 transition",
+                        pathname === l.href
+                          ? "bg-white/20 font-bold"
+                          : "bg-white/10 hover:bg-white/15 font-semibold"
+                      )}
+                      aria-current={pathname === l.href ? "page" : undefined}
+                    >
+                      {l.label}
+                    </Link>
+                  ))}
 
-                <div className="pt-2 flex items-center justify-between">
-                  {/* <Link
-                    href="/signin"
-                    onClick={() => setOpen(false)}
-                    className="font-semibold"
-                  >
-                    Sign in
-                  </Link> */}
-                  {/* <Link
-                    href="/join"
-                    onClick={() => setOpen(false)}
-                    className="inline-flex items-center justify-center h-10 px-4 rounded-full bg-white text-neutral-900 text-sm font-semibold"
-                  >
-                    Become a member
-                  </Link> */}
-                  <ThemeToggle />
-                </div>
-              </motion.div>
-            )}
+                  <div className="pt-2 flex items-center justify-between">
+                    <ThemeToggle />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
       </header>

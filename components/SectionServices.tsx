@@ -54,7 +54,7 @@ const services: Service[] = [
       "/team.jpeg",
       "/admission2.jpeg",
       "/admission.jpeg",
-      "/admission3.jpeg",
+      "/admission4.jpeg",
       "/admission5.jpeg",
       "/admission6.jpeg",
       "/player.jpeg",
@@ -71,7 +71,7 @@ const services: Service[] = [
     name: "Player Care & Safety",
     desc: "Sports physio guidance, recovery protocols, and safe, structured sessions on pro-grade turf.",
     Icon: ShieldCheck,
-    images: ["/medical.jpeg", "/injury.jpg"],
+    images: ["/coach.jpeg", "/medical.jpeg", "/injury.jpg"],
     details: [
       "On-site first aid & physio consultation slots",
       "RICE protocol & return-to-play supervision",
@@ -87,6 +87,7 @@ const services: Service[] = [
     images: [
       "/internatinal.jpeg",
       "/international3.jpeg",
+      "/internatinal7.jpeg",
       "/admition.jpg",
       "/elit.jpg",
     ],
