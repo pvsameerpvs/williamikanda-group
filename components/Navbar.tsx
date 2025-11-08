@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import {
   AnimatePresence,
@@ -210,17 +211,26 @@ export default function Navbar() {
               {/* Left: brand */}
               <motion.div variants={items} custom={0} className="pl-1 lg:pl-2">
                 <Link href="/" className="inline-flex items-center">
-                  <span
+                  {/* Circle background with small padding */}
+                  <div
                     className="
-                      font-extrabold tracking-tight 
-                      text-base sm:text-lg lg:text-xl
-                      max-w-[50vw] lg:max-w-none truncate
-                    "
-                    title="WILLIAMIKANDA GROUP."
+    relative flex items-center justify-center
+    rounded-full p-[2px] /* 1 px extra padding */
+    bg-white/10 shadow-md
+  "
                   >
-                    WILLIAMIKANDA<span className="opacity-90"> GROUP</span>
-                    <span className="text-white">.</span>
-                  </span>
+                    <div className="relative w-[58px] h-[58px] sm:w-[64px] sm:h-[64px] lg:w-[72px] lg:h-[72px]">
+                      <Image
+                        src="/logo.png"
+                        alt="WILLIAMIKANDA GROUP"
+                        fill
+                        priority
+                        sizes="(max-width:768px) 70px, 90px"
+                        className="object-contain rounded-full"
+                      />
+                    </div>
+                  </div>
+
                   <span className="sr-only">Home</span>
                 </Link>
               </motion.div>
@@ -337,12 +347,27 @@ export default function Navbar() {
               style={{ backgroundColor: sharedBg }}
             >
               <Link href="/" className="inline-flex items-center">
-                <span
-                  className="text-base font-extrabold tracking-tight max-w-[60vw] truncate"
-                  title="WILLIAMIKANDA GROUP."
-                >
-                  WILLIAMIKANDA GROUP<span className="text-white">.</span>
-                </span>
+                <div className="relative w-[120px] h-[36px] sm:w-[140px] sm:h-[40px]">
+                  {/* Skewed background */}
+                  <div
+                    className="
+        absolute inset-0
+        bg-white/10
+        skew-x-[-12deg]
+        rounded-md
+        shadow-md
+      "
+                  />
+                  {/* Logo image */}
+                  <Image
+                    src="/logo.png" // 👈 make sure this file is in /public
+                    alt="WILLIAMIKANDA GROUP"
+                    fill
+                    priority
+                    sizes="100vw"
+                    className="object-contain relative z-10"
+                  />
+                </div>
                 <span className="sr-only">Home</span>
               </Link>
 
