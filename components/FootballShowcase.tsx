@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import {
@@ -23,6 +23,48 @@ import JoinTrialsModal from "./JoinTrialsModal";
 
 const BRAND = { maroon: "#5B0C11" };
 
+/* --------------------------- Simple theme toggler -------------------------- */
+function useThemeClass() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  // Read initial state from <html class="dark"> (set by ThemeInitScript below)
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "dark" : "light");
+  }, []);
+
+  const toggle = () => {
+    setTheme((t) => {
+      const next = t === "dark" ? "light" : "dark";
+      document.documentElement.classList.toggle("dark", next === "dark");
+      try {
+        localStorage.setItem("theme", next);
+      } catch {}
+      return next;
+    });
+  };
+
+  return { theme, toggle };
+}
+
+function ThemeToggle() {
+  const { theme, toggle } = useThemeClass();
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label="Toggle theme"
+      className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-semibold ring-1 ring-black/10 dark:ring-white/20 text-gray-900 dark:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+      title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+    >
+      <span className="i">{theme === "dark" ? "🌙" : "☀️"}</span>
+      <span className="hidden sm:inline">
+        {theme === "dark" ? "Dark" : "Light"}
+      </span>
+    </button>
+  );
+}
+
 /* --------------------------- Sortable diamond tile -------------------------- */
 function SortableDiamond({ id, src }: { id: string; src: string }) {
   const {
@@ -33,12 +75,10 @@ function SortableDiamond({ id, src }: { id: string; src: string }) {
     transition,
     isDragging,
   } = useSortable({ id });
-
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
-  const [openJoin, setOpenJoin] = useState(false);
   return (
     <div
       ref={setNodeRef}
@@ -49,7 +89,7 @@ function SortableDiamond({ id, src }: { id: string; src: string }) {
         "group relative aspect-square w-28 sm:w-32 md:w-40 lg:w-44",
         "rotate-45 overflow-hidden rounded-[22px]",
         "bg-white/70 dark:bg-white/5",
-        isDragging ? "ring-2 ring-[#5B0C11]/60" : "",
+        isDragging ? "ring-2 ring-[#5B0C11]/60 dark:ring-[#5B0C11]/70" : "",
       ].join(" ")}
     >
       {/* Counter-rotate inner so the image is upright */}
@@ -62,7 +102,8 @@ function SortableDiamond({ id, src }: { id: string; src: string }) {
           className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
           priority={false}
         />
-        <div className="absolute inset-0 bg-gradient-to-tr from-black/10 via-transparent to-black/10 pointer-events-none" />
+        {/* subtle vignette for both themes */}
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-black/10 via-transparent to-black/10" />
       </div>
     </div>
   );
@@ -139,7 +180,7 @@ export default function FootballShowcase({
   }
 
   return (
-    <section className="relative overflow-hidden bg-white py-8 sm:py-12 md:py-16">
+    <section className="relative overflow-hidden bg-white dark:bg-neutral-950 py-8 sm:py-12 md:py-16">
       <div className="mx-auto max-w-6xl px-3 md:px-6">
         {/* Header / Highlight */}
         <div className="flex flex-col items-start gap-5 md:flex-row md:items-center md:justify-between">
@@ -149,20 +190,16 @@ export default function FootballShowcase({
             </h2>
             <p className="mt-2 text-sm md:text-base leading-relaxed text-gray-700 dark:text-gray-300">
               <span
-                className="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide"
-                style={{
-                  backgroundColor: "rgba(91,12,17,0.12)",
-                  color: BRAND.maroon,
-                }}
+                className="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide bg-[rgba(91,12,17,0.12)] dark:bg-[rgba(91,12,17,0.25)]"
+                style={{ color: BRAND.maroon }}
               >
                 2025–2026 Season Update
               </span>
               <br />
               WILLIAMIKANDA Group has launched its own football club in Dubai
               and Portugal called <strong>AL WILLIAMIKANDA FC</strong>.
-              Footballers aged
-              <strong> 15–30</strong> interested in joining our trials can
-              contact us directly for details.
+              Footballers aged <strong>15–30</strong> interested in joining our
+              trials can contact us directly for details.
             </p>
           </div>
 
@@ -170,8 +207,8 @@ export default function FootballShowcase({
             <button
               type="button"
               onClick={() => setOpenJoin(true)}
-              className="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-white shadow-md transition-colors duration-300"
-              style={{ backgroundColor: "#5B0C11" }}
+              className="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-white shadow-md transition-colors duration-300 hover:opacity-95"
+              style={{ backgroundColor: BRAND.maroon }}
             >
               Join Trials
             </button>
@@ -179,8 +216,7 @@ export default function FootballShowcase({
             <button
               type="button"
               onClick={() => setOpen(true)}
-              style={{ backgroundColor: "rgba(90, 46, 48, 1)" }}
-              className="inline-flex items-center justify-center  text-white rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-black/10 dark:ring-white/15 text-gray-900 dark:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+              className="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-black/10 dark:ring-white/20 text-gray-900 dark:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
             >
               View Schedule
             </button>

@@ -54,7 +54,7 @@ const countries: Record<CountryKey, Country> = {
       "Seasonal elite camps & friendlies",
       "Shortlists for professional evaluations",
     ],
-    location: "Dubai, Sharja, Ajman",
+    location: "Dubai, sharjah, Ajman",
     image: "/int2.jpg",
   },
   pt: {
