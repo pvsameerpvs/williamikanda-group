@@ -17,6 +17,22 @@ export default function ContactPage() {
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    // Collect form data without changing your UI structure
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const fullName = String(data.get("fullName") || "").trim();
+    const contact = String(data.get("contact") || "").trim();
+    const email = String(data.get("email") || "").trim();
+    const dob = String(data.get("dob") || "").trim();
+    const message = String(data.get("message") || "").trim();
+
+    // Build WhatsApp payload & open chat to +971 5658 22845
+    const phone = "971565822845"; // international format, no + or spaces
+    const text = `New contact inquiry:%0AName: ${fullName}%0AContact: ${contact}%0AEmail: ${email}%0ADate of Birth: ${dob}%0AMessage: ${message}`;
+    const waUrl = `https://wa.me/${phone}?text=${text}`;
+    window.open(waUrl, "_blank", "noopener,noreferrer");
+
     setSent(true);
     setTimeout(() => setSent(false), 4000);
   }
@@ -87,6 +103,7 @@ export default function ContactPage() {
             <input
               required
               type="text"
+              name="fullName"
               className="w-full rounded-xl px-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 focus:ring-2 focus:ring-[#cd142a]/40 outline-none transition"
               placeholder="Enter your full name"
             />
@@ -101,6 +118,7 @@ export default function ContactPage() {
               required
               type="tel"
               pattern="[0-9+ ]*"
+              name="contact"
               className="w-full rounded-xl px-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 focus:ring-2 focus:ring-[#cd142a]/40 outline-none transition"
               placeholder="+971 50 123 4567"
             />
@@ -114,6 +132,7 @@ export default function ContactPage() {
             <input
               required
               type="email"
+              name="email"
               className="w-full rounded-xl px-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 focus:ring-2 focus:ring-[#cd142a]/40 outline-none transition"
               placeholder="your@email.com"
             />
@@ -127,6 +146,7 @@ export default function ContactPage() {
             <input
               required
               type="date"
+              name="dob"
               className="w-full rounded-xl px-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 focus:ring-2 focus:ring-[#cd142a]/40 outline-none transition"
             />
           </div>
@@ -139,6 +159,7 @@ export default function ContactPage() {
             <textarea
               rows={5}
               required
+              name="message"
               className="w-full rounded-xl px-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 focus:ring-2 focus:ring-[#cd142a]/40 outline-none transition resize-none"
               placeholder="Tell us more about your goals or inquiry..."
             />

@@ -222,7 +222,15 @@ export default function JoinTrialsModal({
       layout: tokens.map((t) => ({ id: t.id, slotId: t.slotId })),
     };
 
-    // Example: navigate to /contact with query params
+    // WhatsApp: open chat with pre-filled text to +971 565822845
+    const favLabel =
+      slots.find((s) => s.id === fav)?.label ?? fav.toUpperCase();
+    const phone = "971565822845"; // WhatsApp requires international format without '+' or spaces
+    const text = `Hi! I'd like to join trials.\nName: ${name}\nFavourite: ${favLabel}\nFormation: ${formation}`;
+    const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+    window.open(waUrl, "_blank", "noopener,noreferrer");
+
+    // Example: navigate to /contact with query params (kept from your code)
     const params = new URLSearchParams({
       name: payload.name,
       fav: payload.favouritePosition,
@@ -235,7 +243,8 @@ export default function JoinTrialsModal({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-[1000] grid place-items-center p-3 md:p-6"
+      className="fixed inset-0 z-[1000] flex items-center justify-center p-3 md:p-6 overflow-y-auto"
+      style={{ WebkitOverflowScrolling: "touch" as any }}
     >
       {/* Backdrop */}
       <button
@@ -245,7 +254,7 @@ export default function JoinTrialsModal({
       />
 
       {/* Panel */}
-      <div className="relative z-10 w-full max-w-[1100px] rounded-2xl bg-white shadow-2xl ring-1 ring-black/10 dark:bg-neutral-900 dark:ring-white/10 max-h-[92svh] overflow-hidden">
+      <div className="relative z-10 w-full max-w-[1100px] rounded-2xl bg-white shadow-2xl ring-1 ring-black/10 dark:bg-neutral-900 dark:ring-white/10 max-h-[100svh] overflow-hidden">
         {/* Header */}
         <div className="flex flex-wrap items-center gap-3 justify-between border-b border-black/5 p-4 md:p-5 dark:border-white/10">
           <div className="min-w-0">
@@ -280,10 +289,10 @@ export default function JoinTrialsModal({
           </button>
         </div>
 
-        {/* Content wrapper: fixed height inside panel */}
-        <div className="h-[calc(92svh-80px)] md:h-[calc(92svh-84px)] overflow-hidden">
+        {/* Content wrapper: mobile = entire modal scrolls; desktop = inner scroll */}
+        <div className="h-auto md:h-[calc(92svh-84px)] overflow-visible md:overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 md:p-5 h-full overflow-x-hidden">
-            {/* Left: instructions + form — never scroll when right side scrolls (md+) */}
+            {/* Left: instructions + form */}
             <div className="md:col-span-2 space-y-4 overflow-visible">
               <div className="rounded-xl border border-black/10 dark:border-white/10 p-3 md:p-4">
                 <h4 className="text-sm font-bold text-neutral-900 dark:text-white mb-2">
@@ -364,9 +373,9 @@ export default function JoinTrialsModal({
               </div>
             </div>
 
-            {/* Right: pitch — becomes vertically scrollable on md+; no horizontal scroll */}
-            <div className="md:col-span-3 h-full overflow-y-auto overflow-x-hidden overscroll-contain">
-              <div className="sticky top-0 z-0">
+            {/* Right: pitch — desktop gets its own scrollable area */}
+            <div className="md:col-span-3 h-full overflow-visible md:overflow-y-auto overflow-x-hidden overscroll-contain">
+              <div className="md:sticky md:top-0 z-0">
                 <div
                   className="relative mx-auto aspect-[2/3] w-full max-w-[560px] overflow-hidden rounded-2xl border border-black/10 bg-[url('/pitch-texture.jpg')] bg-cover bg-center dark:border-white/10"
                   style={{ backgroundColor: "#0b4e1d" }}

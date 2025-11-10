@@ -24,7 +24,7 @@ export default function RootLayout({
       <body
         className={`${inter.className} bg-white text-black dark:bg-black dark:text-white`}
       >
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <I18nProvider>
             {/* <div className="pt-6">
               <Navbar />
