@@ -84,16 +84,15 @@ export default function HeroLanding() {
                 className="
                   group inline-flex items-center gap-2
                   font-normal text-[clamp(14px,2.5vw,18px)]
-                  transition-all duration-300 transform will-change-transform
+                  transition-all  transform will-change-transform
                   hover:scale-[1.03]
                 "
               >
                 <span
                   className="
-                    bg-gradient-to-r from-[#cd142a] via-[#ffffff] to-[#000000]
-                    bg-[length:200%_auto] bg-clip-text text-transparent
-                    animate-gradientFlow
-                    transition-transform duration-300 group-hover:scale-105
+                     text-white font-extrabold
+    group-hover:scale-105
+    transition-transform duration-300
                   "
                 >
                   Start Training Now

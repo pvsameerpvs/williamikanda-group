@@ -33,7 +33,7 @@ export default function RootLayout({
             <Footer />
             {/* Floating WhatsApp button */}
             <WhatsAppFab
-              phone="971501234567" // ⬅️ put your full number (digits only, with country code)
+              phone="+971 565822845" // ⬅️ put your full number (digits only, with country code)
               message="Hi WILLIAMIKANDA GROUP! I’m interested in your academy."
             />
           </I18nProvider>
