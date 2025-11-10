@@ -64,18 +64,24 @@ export default function Footer() {
 
             {/* Socials */}
             <div className="mt-5 flex items-center gap-3">
-              <Social href="https://instagram.com" label="Instagram">
+              <Social
+                href="https://www.instagram.com/william_mikanda_9/"
+                label="Instagram"
+              >
                 <Instagram size={18} />
               </Social>
-              <Social href="https://facebook.com" label="Facebook">
+              <Social
+                href="https://www.facebook.com/WilliaMikanda"
+                label="Facebook"
+              >
                 <Facebook size={18} />
               </Social>
-              <Social href="https://youtube.com" label="YouTube">
+              {/* <Social href="https://youtube.com" label="YouTube">
                 <Youtube size={18} />
               </Social>
               <Social href="https://williamikanda.group" label="Website">
                 <Globe size={18} />
-              </Social>
+              </Social> */}
             </div>
           </div>
 

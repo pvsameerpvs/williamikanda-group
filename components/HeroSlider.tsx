@@ -2,45 +2,39 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useAnimation } from "framer-motion";
+import { motion } from "framer-motion";
 import Navbar from "./Navbar";
-import {
-  Target,
-  Triangle,
-  Medal,
-  ArrowUpRight,
-  ArrowBigRightDash,
-} from "lucide-react";
+import { ArrowBigRightDash, Target, Triangle, Medal } from "lucide-react";
 import React from "react";
 
 export default function HeroLanding() {
-  const controls = useAnimation();
-  const [isPlaying, setIsPlaying] = React.useState(true);
+  const videoRef = React.useRef<HTMLVideoElement | null>(null);
 
+  // start paused by default
+  const [isPlaying, setIsPlaying] = React.useState(false);
+
+  // Keep the real media element in sync with state
   React.useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
     if (isPlaying) {
-      controls.start({
-        scale: [1, 1.1, 1],
-        transition: {
-          duration: 8,
-          ease: "easeInOut",
-          repeat: Infinity,
-        },
-      });
+      v.muted = true; // keep muted for mobile play
+      v.play().catch(() => setIsPlaying(false));
     } else {
-      controls.stop();
+      v.pause();
     }
-  }, [controls, isPlaying]);
+  }, [isPlaying]);
+
+  const togglePlay = () => setIsPlaying((s) => !s);
 
   return (
     <section className="relative overflow-x-hidden">
-      {/* NEW: stop any horizontal scroll */}
       <Navbar />
 
       {/* background image */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src="/herobg.JPG"
+          src="/herobg.jpeg"
           alt=""
           fill
           priority
@@ -48,12 +42,10 @@ export default function HeroLanding() {
           className="object-cover"
         />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.25),rgba(0,0,0,0.85))]" />
-        {/* changed m-3 -> inset-3 so the inner frame never causes overflow */}
         <div className="absolute inset-3 ring-1 ring-white/10 rounded-[28px] pointer-events-none" />
       </div>
 
       <div className="container-pad mx-auto max-w-7xl pt-6 md:pt-10 lg:pt-12 pb-12">
-        {/* top row: headline + video card */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           {/* left copy */}
           <div className="relative md:z-[100] text-white">
@@ -90,40 +82,32 @@ export default function HeroLanding() {
               <Link
                 href="/contact"
                 className="
-      group inline-flex items-center gap-2
-      font-normal
-      text-[clamp(14px,2.5vw,18px)]
-      
-      hover:border-white/60
-      transition-all duration-300
-      transform will-change-transform
-      hover:scale-[1.03]
-    "
+                  group inline-flex items-center gap-2
+                  font-normal text-[clamp(14px,2.5vw,18px)]
+                  transition-all duration-300 transform will-change-transform
+                  hover:scale-[1.03]
+                "
               >
-                {/* animated gradient text */}
                 <span
                   className="
-        bg-gradient-to-r from-[#cd142a] via-[#ffffff] to-[#000000]
-        bg-[length:200%_auto]
-        bg-clip-text text-transparent
-        animate-gradientFlow
-        transition-transform duration-300 group-hover:scale-105
-      "
+                    bg-gradient-to-r from-[#cd142a] via-[#ffffff] to-[#000000]
+                    bg-[length:200%_auto] bg-clip-text text-transparent
+                    animate-gradientFlow
+                    transition-transform duration-300 group-hover:scale-105
+                  "
                 >
                   Start Training Now
                 </span>
 
                 <ArrowBigRightDash
                   className="
-        h-4 w-4 mt-[1px]
-        text-white/90
-        transition-transform duration-500 will-change-transform
-        group-hover:translate-x-[10px]
-      "
+                    h-4 w-4 mt-[1px] text-white/90
+                    transition-transform duration-500 will-change-transform
+                    group-hover:translate-x-[10px]
+                  "
                 />
               </Link>
 
-              {/* gradient animation keyframes */}
               <style jsx>{`
                 @keyframes gradientFlow {
                   0% {
@@ -143,39 +127,46 @@ export default function HeroLanding() {
             </motion.div>
           </div>
 
-          {/* right: video/thumb card with play button */}
+          {/* right: video card (same wrapper) */}
           <motion.div
             initial={{ scale: 0.96, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
             className="relative rounded-2xl overflow-hidden bg-white/5 ring-1 ring-white/15 backdrop-blur-md"
           >
-            {/* image wrapper that performs the zoom animation */}
-            <div className="aspect-video w-full overflow-hidden">
-              <motion.div
-                animate={controls}
-                style={{ width: "100%", height: "100%", position: "relative" }}
-              >
-                <Image
-                  src="/hero-video-thumb.jpg"
-                  alt="Training clip"
-                  fill
-                  sizes="(min-width:1024px) 40vw, 100vw"
-                  className="object-cover"
-                  priority
-                />
-              </motion.div>
+            <div className="aspect-video w-full overflow-hidden relative">
+              {/* native video */}
+              <video
+                ref={videoRef}
+                src="/herovid.mp4"
+                className="h-full w-full object-cover"
+                muted
+                loop
+                playsInline
+                preload="metadata"
+              />
+
+              {/* always-on subtle fade; stronger when paused */}
+              <div
+                className="
+                  pointer-events-none absolute inset-0 transition-opacity duration-300
+                  bg-black
+                "
+                style={{
+                  opacity: isPlaying ? 0.12 : 0.35,
+                  mixBlendMode: "multiply" as any,
+                }}
+              />
             </div>
 
-            {/* play / pause button */}
+            {/* play / pause button (unchanged UI, just wired to state) */}
             <button
               type="button"
-              onClick={() => setIsPlaying((v) => !v)}
-              aria-label={isPlaying ? "Pause animation" : "Play animation"}
+              onClick={togglePlay}
+              aria-label={isPlaying ? "Pause video" : "Play video"}
               className="absolute left-4 bottom-4 sm:left-6 sm:bottom-6 grid place-items-center h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-white/90 text-neutral-900 shadow-[0_8px_24px_rgba(0,0,0,0.35)] hover:scale-105 transition"
             >
               {isPlaying ? (
-                // Pause icon
                 <svg
                   width="22"
                   height="22"
@@ -186,7 +177,6 @@ export default function HeroLanding() {
                   <path d="M6 5h4v14H6zM14 5h4v14h-4z" />
                 </svg>
               ) : (
-                // Play icon
                 <svg
                   width="22"
                   height="22"
@@ -203,7 +193,6 @@ export default function HeroLanding() {
 
         {/* bottom: three feature cards */}
         <div className="mt-10 md:mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-          {/* NEW: tighter gaps on small screens */}
           <FeatureCard
             title="Self improvement"
             body="Every footballer getting better version of myself"
@@ -217,7 +206,7 @@ export default function HeroLanding() {
           <FeatureCard
             title="Professionals"
             body="Every footballer is constantly sets new goals & achieves them"
-            tag="PRO" // shows Medal icon automatically if no icon passed
+            tag="PRO"
           />
         </div>
       </div>
@@ -225,14 +214,8 @@ export default function HeroLanding() {
   );
 }
 
-// ---- FeatureCard using lucide-react icons ----
-
-const ICONS = {
-  target: Target,
-  triangle: Triangle,
-  medal: Medal,
-} as const;
-
+/* -------- FeatureCard (unchanged) -------- */
+const ICONS = { target: Target, triangle: Triangle, medal: Medal } as const;
 type IconKey = keyof typeof ICONS;
 
 function FeatureCard({
@@ -246,7 +229,6 @@ function FeatureCard({
   tag?: string;
   icon?: IconKey;
 }) {
-  // If no icon but tag is PRO, fall back to Medal
   const ResolvedIcon = icon
     ? ICONS[icon]
     : tag?.toUpperCase() === "PRO"
