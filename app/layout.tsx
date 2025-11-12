@@ -10,9 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "WILLIAMIKANDA GROUP",
-  description:
-    "WILLIAMIKANDA GROUP is a premier sports and lifestyle organization established in 2014, dedicated to developing athletes, managing professional talent, and delivering world-class sports services. We specialize in football academies, player scouting, training programs, and events that empower the next generation of champions across the UAE and beyond.",
-
+  description: "Premium sports & services organization since 2014.",
   // Use logo.png for all icons
   icons: {
     icon: [

@@ -53,7 +53,7 @@ export default function ScheduleModal({
                 href="/contact"
                 className="font-semibold text-[#5B0C11] underline-offset-4 hover:underline"
               >
-                /contact
+                +971 565822845
               </a>
               .
             </p>

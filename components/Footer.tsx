@@ -148,8 +148,8 @@ export default function Footer() {
               </p>
               <p className="flex items-start gap-2 text-black/70 dark:text-white/75">
                 <Phone size={16} className="mt-0.5 shrink-0" />
-                <a href="tel:+971507084372" className="hover:underline">
-                  +971507084372
+                <a href="tel:+971507984372" className="hover:underline">
+                  +971507984372
                 </a>
               </p>
               <p className="flex items-start gap-2 text-black/70 dark:text-white/75">
